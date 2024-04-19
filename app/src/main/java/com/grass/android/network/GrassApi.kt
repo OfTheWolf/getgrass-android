@@ -1,6 +1,6 @@
 package com.grass.android.network
 
-import com.grass.android.DataStore
+import com.grass.android.LocalDataStore
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,7 +22,7 @@ object GrassApi {
         .addInterceptor(logging)
         .addInterceptor { chain ->
             val newBuilder = chain.request().newBuilder()
-            DataStore.token?.let {
+            LocalDataStore.token?.let {
                 newBuilder.addHeader("Authorization", it)
             }
             val request = newBuilder.build()

@@ -75,4 +75,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
 }

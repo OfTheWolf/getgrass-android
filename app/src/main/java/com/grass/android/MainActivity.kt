@@ -17,9 +17,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.grass.android.ui.HomeScreen
+import com.grass.android.ui.HomeViewModel
 import com.grass.android.ui.theme.GrassTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -38,7 +42,9 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen()
+                    val homeViewModel: HomeViewModel = viewModel()
+                    homeViewModel.didLoad(this)
+                    HomeScreen(homeViewModel = homeViewModel)
                 }
             }
         }
@@ -92,6 +98,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     GrassTheme {
-        HomeScreen()
+        val homeViewModel: HomeViewModel = viewModel()
+        HomeScreen(homeViewModel = homeViewModel)
     }
 }

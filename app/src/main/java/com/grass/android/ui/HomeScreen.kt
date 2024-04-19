@@ -17,7 +17,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,9 +32,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.grass.android.Conductor
 import com.grass.android.GrassService
@@ -43,7 +44,7 @@ import com.grass.android.R
 import com.grass.android.data.Login
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel) {
     val uiState by homeViewModel.uiState.collectAsState<UiState>()
     val messages by Conductor.messages.observeAsState(emptyList())
 
@@ -73,7 +74,6 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
                     modifier = modifier.fillMaxSize(),
                     data = (uiState as UiState.Success).data
                 )
-                ConnectButton(modifier)
             }
 
             is UiState.Error -> {
@@ -159,7 +159,9 @@ fun ConnectButton(modifier: Modifier = Modifier) {
         connected = !connected
     }) {
         Text(
-            text = if (connected) "Disconnect" else "Connect", modifier = modifier
+            text = if (connected) "Disconnect" else "Connect",
+            modifier = modifier,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -167,6 +169,23 @@ fun ConnectButton(modifier: Modifier = Modifier) {
 
 @Composable
 fun ResultScreen(modifier: Modifier = Modifier, data: Login.Response) {
-    Text(text = "UserId: ${data.userId}")
-    Text(text = "Email: ${data.email}")
+    LazyColumn(
+        modifier,
+        contentPadding = PaddingValues(Dp(32f)),
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+    ) {
+        item {
+            Text(text = "UserId:\n${data.userId}")
+            Divider()
+        }
+
+        item {
+            Text(text = "Email:\n${data.email}")
+            Divider()
+        }
+
+        item {
+            ConnectButton(modifier)
+        }
+    }
 }
