@@ -10,13 +10,17 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.grass.android.data.Device
 import com.grass.android.data.Login
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.lang.reflect.Type
+import javax.inject.Inject
 
 
-class PreferencesRepository(private val context: Context) {
+class PreferencesRepository @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user-data")
     private val LOGIN_DATA_KEY = stringPreferencesKey("logindata")
     private val DEVICES_DATA_KEY = stringPreferencesKey("devicedata")

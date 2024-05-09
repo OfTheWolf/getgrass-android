@@ -42,9 +42,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    val homeViewModel: HomeViewModel = viewModel()
-                    homeViewModel.didLoad(this)
-                    HomeScreen(homeViewModel = homeViewModel)
+                    HomeScreen()
                 }
             }
         }

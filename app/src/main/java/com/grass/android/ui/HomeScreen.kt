@@ -44,7 +44,7 @@ import com.grass.android.R
 import com.grass.android.data.Login
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel) {
+fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
     val uiState by homeViewModel.uiState.collectAsState<UiState>()
     val messages by Conductor.messages.observeAsState(emptyList())
 

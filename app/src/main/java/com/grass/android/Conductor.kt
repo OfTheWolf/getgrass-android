@@ -17,12 +17,21 @@ import org.json.JSONObject
 import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
+import javax.inject.Inject
 
 enum class Status {
     CONNECTED, DISCONNECTED
 }
 
-class Conductor {
+interface ConductorEvents {
+    fun setMessage(value: String)
+    fun setStatus(value: Status)
+    fun send(requestData: RequestData)
+}
+
+class Conductor @Inject constructor(
+    private val client: OkHttpClient
+): ConductorEvents {
     private val TAG = "GrassService"
     private var webSocket: WebSocket? = null
 
@@ -37,12 +46,6 @@ class Conductor {
 
     private var listener = WebSocketListener(this)
 
-    val logging = HttpLoggingInterceptor()
-
-    private val client: OkHttpClient = OkHttpClient.Builder()
-//        .addInterceptor(logging)
-        .build()
-
     private val WEBSOCKET_URLS = arrayOf(
         "wss://proxy.wynd.network:4650",
         "wss://proxy.wynd.network:4444",
@@ -52,7 +55,6 @@ class Conductor {
     private val timer = Timer()
 
     init {
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
 //                Log.d(TAG, "timer fired")
@@ -97,14 +99,14 @@ class Conductor {
 //        Log.d(TAG, "PING $json")
     }
 
-    fun send(requestData: RequestData) {
+    override fun send(requestData: RequestData) {
         val json = Gson().toJson(requestData)
 //        Log.d(TAG, "REQUEST $json")
         webSocket?.send(json)
         setMessage(json)
     }
 
-    fun setStatus(value: Status) {
+    override fun setStatus(value: Status) {
 //        if (updateUI) {
 //            handler.post {
 //                status.value = value
@@ -112,7 +114,7 @@ class Conductor {
 //        }
     }
 
-    fun setMessage(value: String) {
+    override fun setMessage(value: String) {
         Log.d(TAG, value)
 //        if (value.isEmpty()) return
 //        val size = _messages.size

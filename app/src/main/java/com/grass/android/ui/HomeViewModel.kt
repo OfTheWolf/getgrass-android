@@ -6,18 +6,22 @@ import androidx.lifecycle.viewModelScope
 import com.grass.android.PreferencesRepository
 import com.grass.android.data.Login
 import com.grass.android.network.GrassApi
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val preferencesRepository: PreferencesRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    private lateinit var preferencesRepository: PreferencesRepository
 
-    fun didLoad(context: Context) {
-        preferencesRepository = PreferencesRepository(context)
+    init {
         viewModelScope.launch {
             preferencesRepository.readData().collect {
                 it?.let { data ->
