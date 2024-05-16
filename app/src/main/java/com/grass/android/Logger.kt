@@ -9,7 +9,7 @@ interface Logger {
 
 class DebugLogger(private val tag: String, private val tagSeparator: String = "::") : Logger {
     override fun log(message: String) {
-        log(tag, message)
+        log("", message)
     }
 
     override fun log(tagSuffix: String, message: String) {

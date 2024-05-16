@@ -5,9 +5,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import java.util.Timer
 import java.util.TimerTask
 
-class Ticker(private val timer: Timer) {
+class Ticker {
+
+    private var timer: Timer? = null
+
     fun schedule(delay: Long, interval: Long) = callbackFlow {
-        timer.scheduleAtFixedRate(
+        cancel()
+        timer = Timer()
+        timer?.scheduleAtFixedRate(
             object : TimerTask() {
                 override fun run() {
                     trySend(Unit)
@@ -20,7 +25,8 @@ class Ticker(private val timer: Timer) {
     }
 
     fun cancel() {
-        timer.cancel()
+        timer?.cancel()
+        timer = null
     }
 }
 

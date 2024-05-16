@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.grass.android.ui.HomeScreen
-import com.grass.android.ui.HomeViewModel
+import com.grass.android.ui.home.HomeScreen
+import com.grass.android.ui.home.HomeViewModel
 import com.grass.android.ui.theme.GrassTheme
 import dagger.hilt.android.AndroidEntryPoint
 

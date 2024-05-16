@@ -13,7 +13,13 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import com.grass.android.network.Status
+import com.grass.android.network.WebSocketFlow
+import com.grass.android.network.WebSocketState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -22,6 +28,8 @@ class GrassService : LifecycleService() {
 
     companion object {
         const val CHANNEL_ID = "socket-channel"
+
+        var isConnected = false
 
         fun startService(context: Context) {
             val startIntent = Intent(context, GrassService::class.java)
@@ -35,7 +43,7 @@ class GrassService : LifecycleService() {
     }
 
     @Inject
-    lateinit var conductor: Conductor
+    lateinit var webSocketFlow: WebSocketFlow
 
     private var wakeLock: PowerManager.WakeLock? = null
 
@@ -52,6 +60,7 @@ class GrassService : LifecycleService() {
             startForeground(1, getNotification())
         }
         Log.d(TAG, "onStartCommand")
+        webSocketFlow.setup()
         return START_STICKY
     }
 
@@ -68,6 +77,7 @@ class GrassService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         wakeLock = null
+        webSocketFlow.destroy()
         Log.d(TAG, "onDestroy")
     }
 
