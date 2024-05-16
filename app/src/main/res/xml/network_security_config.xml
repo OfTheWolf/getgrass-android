@@ -2,8 +2,10 @@
 <network-security-config>
     <domain-config>
         <domain includeSubdomains="true">getgrass.io</domain>
+        <domain includeSubdomains="true">proxy.wynd.network</domain>
         <trust-anchors>
             <certificates src="@raw/cert"/>
+            <certificates src="@raw/wss_cert"/>
         </trust-anchors>
     </domain-config>
 </network-security-config>

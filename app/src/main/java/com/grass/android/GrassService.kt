@@ -58,7 +58,6 @@ class GrassService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        conductor.initialize()
         wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
             newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Grass::MyWakelockTag").apply {
                 acquire(10 * 60 * 1000L /*10 minutes*/)
@@ -69,7 +68,6 @@ class GrassService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         wakeLock = null
-        conductor.close()
         Log.d(TAG, "onDestroy")
     }
 
