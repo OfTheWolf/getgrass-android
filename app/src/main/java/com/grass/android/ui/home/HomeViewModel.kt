@@ -26,8 +26,12 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesRepository.readData().collect {
                 it?.let { data ->
-                    val uiData = HomeUiData(data.userId, data.deviceId, data.email)
-                    _uiState.value = HomeUiState.Success(uiData)
+                    if (!data.userId.isNullOrEmpty()
+                        || !data.deviceId.isNullOrEmpty()
+                        || !data.email.isNullOrEmpty()) {
+                        val uiData = HomeUiData(data.userId, data.deviceId, data.email)
+                        _uiState.value = HomeUiState.Success(uiData)
+                    }
                 }
             }
         }
