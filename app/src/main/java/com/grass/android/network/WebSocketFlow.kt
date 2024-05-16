@@ -147,7 +147,7 @@ class WebSocketFlow @Inject constructor(
         job?.cancel()
         retry = 0
         sendStatus(scope, Status.DISCONNECTED)
-        scope = null
+        webSocket?.cancel()
     }
 
     private fun ping() {
