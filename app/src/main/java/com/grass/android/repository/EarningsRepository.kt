@@ -28,6 +28,6 @@ class EarningsRepository @Inject constructor(
     }
 
     private fun calculatePoints(response: ActiveIp.Response): Double {
-        return response.totalUptime / 3600.0 * response.ipScore * response.multiplier
+        return response.totalUptime / 3600.0 * response.ipScore
     }
 }

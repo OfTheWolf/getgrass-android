@@ -9,6 +9,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -43,7 +44,7 @@ class DashboardViewModel @Inject constructor(
                 .onEach {
                     logger.log("dashboard", it.toString())
                 }
-                .collect {
+                .collectLatest {
                     _uiState.value = it
                 }
         }

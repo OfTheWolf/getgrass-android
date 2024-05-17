@@ -19,14 +19,12 @@ fun LiveScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier) {
+        DashboardScreen(Modifier)
 
         ConnectButton(modifier.fillMaxWidth(), viewModel)
 
         uiState.status?.let {
             Text(text = "Status: $it")
         }
-
-        DashboardScreen(Modifier)
-
     }
 }

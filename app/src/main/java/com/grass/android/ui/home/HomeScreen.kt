@@ -1,21 +1,28 @@
 package com.grass.android.ui.home
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,7 +52,9 @@ import com.grass.android.R
 import com.grass.android.ui.LoadingScreen
 import com.grass.android.ui.live.LiveScreen
 import com.grass.android.ui.live.LiveViewModel
+import com.grass.android.ui.theme.Accent
 import com.grass.android.ui.theme.LightBackround
+import com.grass.android.ui.theme.SecondaryBackground
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
@@ -54,52 +64,67 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
 //    val status = Conductor.status.observeAsState()
 
     Column(
-        modifier
-            .background(LightBackround)
-            .padding(Dp(16f)),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        LazyColumn(modifier = Modifier.weight(1f), contentPadding = PaddingValues(Dp(20f))) {
-//            items(messages) { message ->
-//                Text(message, fontSize = TextUnit(12f, TextUnitType.Sp))
-//                Divider()
-//            }
-        }
+        Modifier
+            .fillMaxWidth()
+            .background(SecondaryBackground), horizontalAlignment = Alignment.Start) {
 
-        when (uiState) {
-            is HomeUiState.Loading -> {
-                Column(
-                    modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LoadingScreen(modifier)
-                }
-            }
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "grass-logo",
+            Modifier.padding(16.dp)
+        )
 
-            is HomeUiState.Success -> {
-                val data = (uiState as HomeUiState.Success).data
-                if (!data.isLoggedIn) {
-                    LoginScreen(modifier, homeViewModel)
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(0.5.dp)
+            .background(Color.Black))
+
+        Column(
+            modifier
+                .background(LightBackround)
+                .padding(Dp(16f)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            when (uiState) {
+                is HomeUiState.Loading -> {
+                    Column(
+                        modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LoadingScreen(modifier)
+                    }
                 }
-                Column(modifier = modifier.fillMaxSize()) {
-                    ResultScreen(
-                        modifier = modifier,
-                        data = data
+
+                is HomeUiState.Success -> {
+                    val data = (uiState as HomeUiState.Success).data
+                    if (!data.isLoggedIn) {
+                        LoginScreen(modifier, homeViewModel)
+                    }
+                    Column(modifier = modifier.fillMaxSize()) {
+                        LiveScreen(
+                            modifier = modifier.weight(1f),
+                        )
+                        ResultScreen(
+                            modifier = modifier,
+                            data = data
+                        )
+                    }
+                }
+
+                is HomeUiState.Error -> {
+                    Toast.makeText(
+                        LocalContext.current,
+                        R.string.loading_failed,
+                        Toast.LENGTH_SHORT
                     )
-                    LiveScreen(
-                        modifier = modifier.weight(1f),
-                    )
+                        .show()
                 }
-            }
 
-            is HomeUiState.Error -> {
-                Toast.makeText(LocalContext.current, R.string.loading_failed, Toast.LENGTH_SHORT)
-                    .show()
-            }
+                else -> {
 
-            else -> {
-
+                }
             }
         }
     }
@@ -163,14 +188,18 @@ fun ConnectButton(modifier: Modifier = Modifier, viewModel: LiveViewModel) {
 
     val context = LocalContext.current
 
-    Button(modifier = Modifier.padding(vertical = Dp(16f)), onClick = {
-        if (uiState.isConnected) {
-            GrassService.stopService(context)
-        } else {
-            GrassService.startService(context)
-        }
-        viewModel.toggleConnection()
-    }) {
+    OutlinedButton(modifier = Modifier.padding(vertical = Dp(16f)),
+        colors = ButtonDefaults.buttonColors(
+            Accent, Color.Black
+        ),
+        onClick = {
+            if (uiState.isConnected) {
+                GrassService.stopService(context)
+            } else {
+                GrassService.startService(context)
+            }
+            viewModel.toggleConnection()
+        }) {
         Text(
             text = if (uiState.isConnected) "Disconnect" else "Connect",
             modifier = modifier,
@@ -188,8 +217,8 @@ fun InfoItemView(modifier: Modifier = Modifier, tag: String, text: String) {
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Text(modifier = modifier.alpha(0.5f), text = tag, fontSize = 13.sp)
-        Text(text = text)
+        Text(modifier = modifier.alpha(0.5f), text = tag, fontSize = 12.sp)
+        Text(text = text, fontSize = 14.sp)
     }
     Divider()
 }

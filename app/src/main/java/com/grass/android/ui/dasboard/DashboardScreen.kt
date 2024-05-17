@@ -18,7 +18,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.grass.android.R
-import com.grass.android.advancedShadow
+import com.grass.android.boxShadow
 import com.grass.android.ui.theme.DarkBackground
 import com.grass.android.ui.theme.LightBackround
 
@@ -49,7 +48,7 @@ fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel = viewMode
 
     Card(
         modifier = Modifier
-            .advancedShadow(cornersRadius = 16.dp, offsetY = 4.dp),
+            .boxShadow(borderRadius = 16.dp, offsetY = 4.dp, spread = 4f),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = DarkBackground
@@ -77,13 +76,14 @@ data class BentoItem(
 fun BentoBox(modifier: Modifier, item: BentoItem) {
     Card(
         modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = LightBackround, //Card background color
         ),
         border = CardDefaults.outlinedCardBorder()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(vertical = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -96,12 +96,15 @@ fun BentoBox(modifier: Modifier, item: BentoItem) {
                     Icon(
                         it, item.name, Modifier.size(16.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                 }
                 Text(
-                    text = item.title, modifier = Modifier.background(
+                    text = item.title,
+                    modifier = Modifier.background(
                         DarkBackground
-                    ), style = MaterialTheme.typography.titleSmall
+                    ),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
@@ -121,7 +124,7 @@ fun BentoBox(modifier: Modifier, item: BentoItem) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = item.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(text = item.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
