@@ -44,6 +44,7 @@ import com.grass.android.R
 import com.grass.android.ui.LoadingScreen
 import com.grass.android.ui.live.LiveScreen
 import com.grass.android.ui.live.LiveViewModel
+import com.grass.android.ui.theme.LightBackround
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = viewModel()) {
@@ -52,7 +53,12 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
 
 //    val status = Conductor.status.observeAsState()
 
-    Column(modifier.padding(Dp(16f)), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier
+            .background(LightBackround)
+            .padding(Dp(16f)),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         LazyColumn(modifier = Modifier.weight(1f), contentPadding = PaddingValues(Dp(20f))) {
 //            items(messages) { message ->
 //                Text(message, fontSize = TextUnit(12f, TextUnitType.Sp))
@@ -72,16 +78,19 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
             }
 
             is HomeUiState.Success -> {
+                val data = (uiState as HomeUiState.Success).data
+                if (!data.isLoggedIn) {
+                    LoginScreen(modifier, homeViewModel)
+                }
                 Column(modifier = modifier.fillMaxSize()) {
                     ResultScreen(
                         modifier = modifier,
-                        data = (uiState as HomeUiState.Success).data
+                        data = data
                     )
                     LiveScreen(
                         modifier = modifier.weight(1f),
                     )
                 }
-
             }
 
             is HomeUiState.Error -> {
@@ -93,10 +102,6 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
 
             }
         }
-
-        if (!(uiState is HomeUiState.Success))
-            LoginScreen(modifier, homeViewModel)
-
     }
 }
 

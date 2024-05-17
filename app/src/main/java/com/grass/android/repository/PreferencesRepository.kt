@@ -1,10 +1,11 @@
-package com.grass.android
+package com.grass.android.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
+import com.grass.android.InMemoryDataStore
 import com.grass.android.data.Device
 import com.grass.android.data.Login
 import com.grass.android.data.UserData
@@ -22,7 +23,8 @@ class PreferencesRepository @Inject constructor(
                 var userId: String? = null
                 var deviceId: String? = null
                 var email: String? = null
-                // No type safety.
+                var isLoggedIn = false
+
                 preferences[DEVICES_DATA_KEY]?.let {
                     val device =
                         Gson().fromJson(it, Device.Data::class.java)
@@ -35,9 +37,10 @@ class PreferencesRepository @Inject constructor(
                     InMemoryDataStore.saveLoginData(login)
                     userId = login.userId
                     email = login.email
+                    isLoggedIn = login.accessToken.isNotEmpty()
                 }
 
-                UserData(userId, deviceId, email)
+                UserData(userId, deviceId, email, isLoggedIn)
             }
     }
 
