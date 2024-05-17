@@ -3,7 +3,7 @@ package com.grass.android
 import com.grass.android.data.Device
 import com.grass.android.data.Login
 
-object LocalDataStore {
+object InMemoryDataStore {
     lateinit var userId: String
     lateinit var browserId: String
     var token: String? = null

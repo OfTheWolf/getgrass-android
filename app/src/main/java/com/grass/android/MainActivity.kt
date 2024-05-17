@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.grass.android.ui.HomeScreen
-import com.grass.android.ui.HomeViewModel
+import com.grass.android.ui.home.HomeScreen
+import com.grass.android.ui.home.HomeViewModel
 import com.grass.android.ui.theme.GrassTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,9 +42,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    val homeViewModel: HomeViewModel = viewModel()
-                    homeViewModel.didLoad(this)
-                    HomeScreen(homeViewModel = homeViewModel)
+                    HomeScreen()
                 }
             }
         }
@@ -54,12 +52,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Conductor.updateUI = true
+//        Conductor.updateUI = true
     }
 
     override fun onPause() {
         super.onPause()
-        Conductor.updateUI = false
+//        Conductor.updateUI = false
     }
 
     /**

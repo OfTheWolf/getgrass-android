@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -13,12 +12,24 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import com.grass.android.network.Status
+import com.grass.android.network.WebSocketFlow
+import com.grass.android.network.WebSocketState
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
-class GrassService : Service() {
+@AndroidEntryPoint
+class GrassService : LifecycleService() {
     private val TAG = "com.grass.android"
 
     companion object {
         const val CHANNEL_ID = "socket-channel"
+
+        var isConnected = false
 
         fun startService(context: Context) {
             val startIntent = Intent(context, GrassService::class.java)
@@ -31,31 +42,34 @@ class GrassService : Service() {
         }
     }
 
-    private var conductor = Conductor()
+    @Inject
+    lateinit var webSocketFlow: WebSocketFlow
 
     private var wakeLock: PowerManager.WakeLock? = null
 
     override fun onBind(intent: Intent): IBinder? {
+        super.onBind(intent)
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(1, getNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
             startForeground(1, getNotification())
         }
         Log.d(TAG, "onStartCommand")
+        webSocketFlow.setup()
         return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        conductor.initialize()
         wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
             newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Grass::MyWakelockTag").apply {
-                acquire(10*60*1000L /*10 minutes*/)
+                acquire(10 * 60 * 1000L /*10 minutes*/)
             }
         }
     }
@@ -63,7 +77,7 @@ class GrassService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         wakeLock = null
-        conductor.close()
+        webSocketFlow.destroy()
         Log.d(TAG, "onDestroy")
     }
 
@@ -73,12 +87,14 @@ class GrassService : Service() {
             "Socket Service Channel",
             NotificationManager.IMPORTANCE_HIGH
         )
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(serviceChannel)
     }
 
     private fun notify(text: String) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notif = getNotification(text)
         notificationManager.notify(1, notif)
     }
