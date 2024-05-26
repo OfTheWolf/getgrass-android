@@ -101,15 +101,16 @@ fun HomeScreen(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = vie
                     val data = (uiState as HomeUiState.Success).data
                     if (!data.isLoggedIn) {
                         LoginScreen(modifier, homeViewModel)
-                    }
-                    Column(modifier = modifier.fillMaxSize()) {
-                        LiveScreen(
-                            modifier = modifier.weight(1f),
-                        )
-                        ResultScreen(
-                            modifier = modifier,
-                            data = data
-                        )
+                    } else {
+                        Column(modifier = modifier.fillMaxSize()) {
+                            LiveScreen(
+                                modifier = modifier.weight(1f),
+                            )
+                            ResultScreen(
+                                modifier = modifier,
+                                data = data
+                            )
+                        }
                     }
                 }
 

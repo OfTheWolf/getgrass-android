@@ -27,11 +27,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesRepository.readData().collect {
                 it?.let { data ->
-                    if (!data.userId.isNullOrEmpty() || !data.deviceId.isNullOrEmpty() || !data.email.isNullOrEmpty()) {
-                        val uiData =
+                    val uiData =
+                        if (!data.userId.isNullOrEmpty() || !data.deviceId.isNullOrEmpty() || !data.email.isNullOrEmpty()) {
                             HomeUiData(data.userId, data.deviceId, data.email, data.isLoggedIn)
-                        _uiState.value = HomeUiState.Success(uiData)
-                    }
+                        } else {
+                            HomeUiData(null, null, null, false)
+                        }
+                    _uiState.value = HomeUiState.Success(uiData)
                 }
             }
         }
